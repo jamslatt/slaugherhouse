@@ -1,0 +1,24 @@
+{
+  "name": "slaugherhouse",
+  "version": "1.0.0",
+  "description": "Slaugherhouse Arcade Game",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jamslatt/slaugherhouse.git"
+  },
+  "keywords": [
+    "JS",
+    "HTML",
+    "S5"
+  ],
+  "author": "James Slattery",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jamslatt/slaugherhouse/issues"
+  },
+  "homepage": "https://github.com/jamslatt/slaugherhouse#readme"
+}
