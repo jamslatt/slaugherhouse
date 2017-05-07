@@ -1,0 +1,11 @@
+@import url('https://fonts.googleapis.com/css?family=Amatic+SC');
+body {
+    background: #212121;
+    color: #ffffff;
+    font-family: 'Amatic SC', cursive;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+
+}
+#cr-stage { border:2px solid black; margin:5px auto; color:white }
