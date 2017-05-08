@@ -118,8 +118,8 @@ window.addEventListener("load",function() {
         stage.add("viewport").follow(player);
 
         // Add in a couple of enemies
-        stage.insert(new Q.Enemy({ x: 700, y: 0 }));
-        stage.insert(new Q.Enemy({ x: 800, y: 0 }));
+        stage.insert(new Q.Enemy({ x: 700, y: 200 }));
+        stage.insert(new Q.Enemy({ x: 800, y: 200 }));
 
         // Finally add in the tower goal
         stage.insert(new Q.Tower({ x: 180, y: 50 }));
