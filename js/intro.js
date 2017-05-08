@@ -3,5 +3,6 @@ $(document).ready(function () {
     $('.play').click(function () {
         $('.intro').fadeOut('slow');
         $('.quintus_container').fadeIn('fast');
+        $('.quintus_container').focus();
     })
 });
