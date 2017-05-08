@@ -7,6 +7,8 @@
 // This is the example from the website homepage, it consists
 // a simple, non-animated platformer with some enemies and a 
 // target for the player.
+var score = 0;
+
 window.addEventListener("load",function() {
 
 // Set up an instance of the Quintus engine  and include
@@ -92,6 +94,8 @@ window.addEventListener("load",function() {
                 if(collision.obj.isA("Player")) {
                     this.destroy();
                     collision.obj.p.vy = -300;
+                    score =+ 100;
+                    console.log(score);
                 }
             });
         }
