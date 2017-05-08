@@ -1,140 +1,178 @@
-window.onload = function() {
-    //start crafty
-    Crafty.init(400, 320);
-    Crafty.canvas();
+// # Quintus platformer example
+//
+// [Run the example](../quintus/examples/platformer/index.html)
+// WARNING: this game must be run from a non-file:// url
+// as it loads a level json file.
+//
+// This is the example from the website homepage, it consists
+// a simple, non-animated platformer with some enemies and a 
+// target for the player.
+window.addEventListener("load",function() {
 
-    //turn the sprite map into usable components
-    Crafty.sprite(16, "sprite.png", {
-        grass1: [0,0],
-        grass2: [1,0],
-        grass3: [2,0],
-        grass4: [3,0],
-        flower: [0,1],
-        bush1: [0,2],
-        bush2: [1,2],
-        player: [0,3]
-    });
+// Set up an instance of the Quintus engine  and include
+// the Sprites, Scenes, Input and 2D module. The 2D module
+// includes the `TileLayer` class as well as the `2d` componet.
+    var Q = window.Q = Quintus()
+        .include("Sprites, Scenes, Input, 2D, Anim, Touch, UI")
+        // Maximize this game to whatever the size of the browser is
+        .setup({ maximize: true })
+        // And turn on default input controls and touch input (for UI)
+        .controls().touch()
 
-    //method to randomy generate the map
-    function generateWorld() {
-        //generate the grass along the x-axis
-        for(var i = 0; i < 25; i++) {
-            //generate the grass along the y-axis
-            for(var j = 0; j < 20; j++) {
-                grassType = Crafty.randRange(1, 4);
-                Crafty.e("2D, Canvas, grass"+grassType)
-                    .attr({x: i * 16, y: j * 16});
+// ## Player Sprite
+// The very basic player sprite, this is just a normal sprite
+// using the player sprite sheet with default controls added to it.
+    Q.Sprite.extend("Player",{
 
-                //1/50 chance of drawing a flower and only within the bushes
-                if(i > 0 && i < 24 && j > 0 && j < 19 && Crafty.randRange(0, 50) > 49) {
-                    Crafty.e("2D, DOM, flower, Animate")
-                        .attr({x: i * 16, y: j * 16})
-                        .animate("wind", 0, 1, 3)
-                        .bind("enterframe", function() {
-                            if(!this.isPlaying())
-                                this.animate("wind", 80);
-                        });
-                }
-            }
-        }
+        // the init constructor is called on creation
+        init: function(p) {
 
-        //create the bushes along the x-axis which will form the boundaries
-        for(var i = 0; i < 25; i++) {
-            Crafty.e("2D, Canvas, wall_top, bush"+Crafty.randRange(1,2))
-                .attr({x: i * 16, y: 0, z: 2});
-            Crafty.e("2D, DOM, wall_bottom, bush"+Crafty.randRange(1,2))
-                .attr({x: i * 16, y: 304, z: 2});
-        }
-
-        //create the bushes along the y-axis
-        //we need to start one more and one less to not overlap the previous bushes
-        for(var i = 1; i < 19; i++) {
-            Crafty.e("2D, DOM, wall_left, bush"+Crafty.randRange(1,2))
-                .attr({x: 0, y: i * 16, z: 2});
-            Crafty.e("2D, Canvas, wall_right, bush"+Crafty.randRange(1,2))
-                .attr({x: 384, y: i * 16, z: 2});
-        }
-    }
-
-    //the loading screen that will display while our assets load
-    Crafty.scene("loading", function() {
-        //load takes an array of assets and a callback when complete
-        Crafty.load(["sprite.png"], function() {
-            Crafty.scene("main"); //when everything is loaded, run the main scene
-        });
-
-        //black background with some loading text
-        Crafty.background("#000");
-        Crafty.e("2D, DOM, Text").attr({w: 100, h: 20, x: 150, y: 120})
-            .text("Loading")
-            .css({"text-align": "center"});
-    });
-
-    //automatically play the loading scene
-    Crafty.scene("loading");
-
-    Crafty.scene("main", function() {
-        generateWorld();
-
-        Crafty.c('CustomControls', {
-            __move: {left: false, right: false, up: false, down: false},
-            _speed: 3,
-
-            CustomControls: function(speed) {
-                if(speed) this._speed = speed;
-                var move = this.__move;
-
-                this.bind('enterframe', function() {
-                    //move the player in a direction depending on the booleans
-                    //only move the player in one direction at a time (up/down/left/right)
-                    if(Crafty.keydown["ArrowRight"] || Crafty.keydown["Right"]) this.x += this._speed;
-                    else if(Crafty.keydown["ArrowLeft"] || Crafty.keydown["Left"]) this.x -= this._speed;
-                    else if(Crafty.keydown["ArrowUp"] || Crafty.keydown["Up"]) this.y -= this._speed;
-                    else if(Crafty.keydown["ArrowDown"] || Crafty.keydown["Down"]) this.y += this._speed;
-                });
-
-                return this;
-            }
-        });
-
-        //create our player entity with some premade components
-        player = Crafty.e("2D, Canvas, player, Controls, CustomControls, Animate, Collision")
-            .attr({x: 160, y: 144, z: 1})
-            .CustomControls(1)
-            .animate("walk_left", 6, 3, 8)
-            .animate("walk_right", 9, 3, 11)
-            .animate("walk_up", 3, 3, 5)
-            .animate("walk_down", 0, 3, 2)
-            .bind("enterframe", function(e) {
-                if(Crafty.keydown["ArrowLeft"] || Crafty.keydown["Left"]) {
-                    if(!this.isPlaying("walk_left"))
-                        this.stop().animate("walk_left", 10);
-                } else if(Crafty.keydown["ArrowRight"] || Crafty.keydown["Right"]) {
-                    if(!this.isPlaying("walk_right"))
-                        this.stop().animate("walk_right", 10);
-                } else if(Crafty.keydown["ArrowUp"] || Crafty.keydown["Up"]) {
-                    if(!this.isPlaying("walk_up"))
-                        this.stop().animate("walk_up", 10);
-                } else if(Crafty.keydown["ArrowDown"] || Crafty.keydown["Down"]) {
-                    if(!this.isPlaying("walk_down"))
-                        this.stop().animate("walk_down", 10);
-                }
-            }).bind("keyup", function(e) {
-                this.stop();
-            })
-            .collision()
-            .onHit("wall_left", function() {
-                this.x += this._speed;
-                this.stop();
-            }).onHit("wall_right", function() {
-                this.x -= this._speed;
-                this.stop();
-            }).onHit("wall_bottom", function() {
-                this.y -= this._speed;
-                this.stop();
-            }).onHit("wall_top", function() {
-                this.y += this._speed;
-                this.stop();
+            // You can call the parent's constructor with this._super(..)
+            this._super(p, {
+                sheet: "player",  // Setting a sprite sheet sets sprite width and height
+                x: 410,           // You can also set additional properties that can
+                y: 90             // be overridden on object creation
             });
+
+            // Add in pre-made components to get up and running quickly
+            // The `2d` component adds in default 2d collision detection
+            // and kinetics (velocity, gravity)
+            // The `platformerControls` makes the player controllable by the
+            // default input actions (left, right to move,  up or action to jump)
+            // It also checks to make sure the player is on a horizontal surface before
+            // letting them jump.
+            this.add('2d, platformerControls');
+
+            // Write event handlers to respond hook into behaviors.
+            // hit.sprite is called everytime the player collides with a sprite
+            this.on("hit.sprite",function(collision) {
+
+                // Check the collision, if it's the Tower, you win!
+                if(collision.obj.isA("Tower")) {
+                    Q.stageScene("endGame",1, { label: "You Won!" });
+                    this.destroy();
+                }
+            });
+
+        }
+
     });
-};
+
+
+// ## Tower Sprite
+// Sprites can be simple, the Tower sprite just sets a custom sprite sheet
+    Q.Sprite.extend("Tower", {
+        init: function(p) {
+            this._super(p, { sheet: 'tower' });
+        }
+    });
+
+// ## Enemy Sprite
+// Create the Enemy class to add in some baddies
+    Q.Sprite.extend("Enemy",{
+        init: function(p) {
+            this._super(p, { sheet: 'enemy', vx: 100 });
+
+            // Enemies use the Bounce AI to change direction
+            // whenver they run into something.
+            this.add('2d, aiBounce');
+
+            // Listen for a sprite collision, if it's the player,
+            // end the game unless the enemy is hit on top
+            this.on("bump.left,bump.right,bump.bottom",function(collision) {
+                if(collision.obj.isA("Player")) {
+                    Q.stageScene("endGame",1, { label: "You Died" });
+                    collision.obj.destroy();
+                }
+            });
+
+            // If the enemy gets hit on the top, destroy it
+            // and give the user a "hop"
+            this.on("bump.top",function(collision) {
+                if(collision.obj.isA("Player")) {
+                    this.destroy();
+                    collision.obj.p.vy = -300;
+                }
+            });
+        }
+    });
+
+// ## Level1 scene
+// Create a new scene called level 1
+    Q.scene("level1",function(stage) {
+
+        // Add in a repeater for a little parallax action
+        stage.insert(new Q.Repeater({ asset: "background-wall.png", speedX: 0.5, speedY: 0.5 }));
+
+        // Add in a tile layer, and make it the collision layer
+        stage.collisionLayer(new Q.TileLayer({
+            dataAsset: 'level.json',
+            sheet:     'tiles' }));
+
+
+        // Create the player and add them to the stage
+        var player = stage.insert(new Q.Player());
+
+        // Give the stage a moveable viewport and tell it
+        // to follow the player.
+        stage.add("viewport").follow(player);
+
+        // Add in a couple of enemies
+        stage.insert(new Q.Enemy({ x: 700, y: 0 }));
+        stage.insert(new Q.Enemy({ x: 800, y: 0 }));
+
+        // Finally add in the tower goal
+        stage.insert(new Q.Tower({ x: 180, y: 50 }));
+    });
+
+// To display a game over / game won popup box, 
+// create a endGame scene that takes in a `label` option
+// to control the displayed message.
+    Q.scene('endGame',function(stage) {
+        var container = stage.insert(new Q.UI.Container({
+            x: Q.width/2, y: Q.height/2, fill: "rgba(0,0,0,0.5)"
+        }));
+
+        var button = container.insert(new Q.UI.Button({ x: 0, y: 0, fill: "#CCCCCC",
+            label: "Play Again" }))
+        var label = container.insert(new Q.UI.Text({x:10, y: -10 - button.p.h,
+            label: stage.options.label }));
+        // When the button is clicked, clear all the stages
+        // and restart the game.
+        button.on("click",function() {
+            Q.clearStages();
+            Q.stageScene('level1');
+        });
+
+        // Expand the container to visibily fit it's contents
+        // (with a padding of 20 pixels)
+        container.fit(20);
+    });
+
+// ## Asset Loading and Game Launch
+// Q.load can be called at any time to load additional assets
+// assets that are already loaded will be skipped
+// The callback will be triggered when everything is loaded
+    Q.load("sprites.png, sprites.json, level.json, tiles.png, background-wall.png", function() {
+        // Sprites sheets can be created manually
+        Q.sheet("tiles","tiles.png", { tilew: 32, tileh: 32 });
+
+        // Or from a .json asset that defines sprite locations
+        Q.compileSheets("sprites.png","sprites.json");
+
+        // Finally, call stageScene to run the game
+        Q.stageScene("level1");
+    });
+
+// ## Possible Experimentations:
+// 
+// The are lots of things to try out here.
+// 
+// 1. Modify level.json to change the level around and add in some more enemies.
+// 2. Add in a second level by creating a level2.json and a level2 scene that gets
+//    loaded after level 1 is complete.
+// 3. Add in a title screen
+// 4. Add in a hud and points for jumping on enemies.
+// 5. Add in a `Repeater` behind the TileLayer to create a paralax scrolling effect.
+
+});
