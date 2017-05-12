@@ -124,7 +124,7 @@ window.addEventListener("load",function() {
         // Add in a couple of enemies
         stage.insert(new Q.Enemy({ x: 700, y: 0 }));
         stage.insert(new Q.Enemy({ x: 700, y: 200 }));
-        stage.insert(new Q.Enemy({ x: 800, y: 200 }));
+        stage.insert(new Q.Enemy({ x: 750, y: 200 }));
         stage.insert(new Q.Enemy({ x: 410, y: 300 }));
         stage.insert(new Q.Enemy({ x: 600, y: 300 }));
 
