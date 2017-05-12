@@ -160,7 +160,7 @@ window.addEventListener("load",function() {
 // Q.load can be called at any time to load additional assets
 // assets that are already loaded will be skipped
 // The callback will be triggered when everything is loaded
-    Q.load("sprites.png, sprites.json, level.json, tiles.png, background-wall.png", function() {
+    Q.load("sprites.png, sprites.json, level.json, tiles.png, background-wall.jpg", function() {
         // Sprites sheets can be created manually
         Q.sheet("tiles","tiles.png", { tilew: 32, tileh: 32 });
 
