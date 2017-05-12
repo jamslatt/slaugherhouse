@@ -5,7 +5,7 @@
 // as it loads a level json file.
 //
 // This is the example from the website homepage, it consists
-// a simple, non-animated platformer with some enemies and a 
+// a simple, non-animated platformer with some enemies and a
 // target for the player.
 var score = 0;
 
@@ -125,12 +125,14 @@ window.addEventListener("load",function() {
         stage.insert(new Q.Enemy({ x: 700, y: 0 }));
         stage.insert(new Q.Enemy({ x: 700, y: 200 }));
         stage.insert(new Q.Enemy({ x: 800, y: 200 }));
+        stage.insert(new Q.Enemy({ x: 410, y: 300 }));
+        stage.insert(new Q.Enemy({ x: 600, y: 300 }));
 
         // Finally add in the tower goal
         stage.insert(new Q.Tower({ x: 180, y: 50 }));
     });
 
-// To display a game over / game won popup box, 
+// To display a game over / game won popup box,
 // create a endGame scene that takes in a `label` option
 // to control the displayed message.
     Q.scene('endGame',function(stage) {
@@ -170,9 +172,9 @@ window.addEventListener("load",function() {
     });
 
 // ## Possible Experimentations:
-// 
+//
 // The are lots of things to try out here.
-// 
+//
 // 1. Modify level.json to change the level around and add in some more enemies.
 // 2. Add in a second level by creating a level2.json and a level2 scene that gets
 //    loaded after level 1 is complete.
